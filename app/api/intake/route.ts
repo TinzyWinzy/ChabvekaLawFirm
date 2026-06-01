@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { dbExecute } from "@/lib/db";
+import { getSupabase } from "@/lib/db";
 import { intakeSchema } from "@/lib/validation";
 import { rateLimit, getClientKey } from "@/lib/rate-limit";
 
@@ -35,24 +35,26 @@ export async function POST(req: Request) {
   }
 
   try {
-    await dbExecute(
-      `INSERT INTO intake_submissions
-        (name, email, phone, practice_area, case_summary, urgency, budget, preferred_contact)
-       VALUES
-        ($name, $email, $phone, $practiceArea, $caseSummary, $urgency, $budget, $preferredContact)`,
-      {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        practiceArea: data.practiceArea,
-        caseSummary: data.caseSummary,
-        urgency: data.urgency,
-        budget: data.budget,
-        preferredContact: data.preferredContact,
-      },
-    );
+    const { error } = await getSupabase().from("intake_submissions").insert({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      practice_area: data.practiceArea,
+      case_summary: data.caseSummary,
+      urgency: data.urgency,
+      budget: data.budget,
+      preferred_contact: data.preferredContact,
+    });
+
+    if (error) throw error;
   } catch (err) {
     console.error("intake insert failed", err);
+    if (err instanceof Error && err.message.includes("not configured")) {
+      return NextResponse.json(
+        { error: "The site is not yet configured to receive intake submissions." },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { error: "We could not submit your intake. Please try again or call us directly." },
       { status: 500 },

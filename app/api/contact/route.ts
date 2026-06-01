@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { dbExecute } from "@/lib/db";
+import { getSupabase } from "@/lib/db";
 import { contactSchema } from "@/lib/validation";
 import { rateLimit, getClientKey } from "@/lib/rate-limit";
 
@@ -35,13 +35,23 @@ export async function POST(req: Request) {
   }
 
   try {
-    await dbExecute(
-      "INSERT INTO contact_messages (name, email, phone, message) VALUES ($name, $email, $phone, $message)",
-      { name, email, phone: phone ?? null, message },
-    );
+    const { error } = await getSupabase()
+      .from("contact_messages")
+      .insert({ name, email, phone: phone ?? null, message });
+
+    if (error) throw error;
   } catch (err) {
     console.error("contact insert failed", err);
-    return NextResponse.json({ error: "Could not save your message. Please try again." }, { status: 500 });
+    if (err instanceof Error && err.message.includes("not configured")) {
+      return NextResponse.json(
+        { error: "The site is not yet configured to receive messages." },
+        { status: 503 },
+      );
+    }
+    return NextResponse.json(
+      { error: "Could not save your message. Please try again." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true });

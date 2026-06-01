@@ -37,6 +37,10 @@ local.db
 local.db-journal
 local.db-shm
 local.db-wal
+auth
+auth-wal
+auth-shm
+auth-journal
 
 # typescript
 *.tsbuildinfo

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { dbQuery, dbExecute } from "@/lib/db";
+import { getSupabase, UNIQUE_VIOLATION } from "@/lib/db";
 import { bookingSchema } from "@/lib/validation";
 import { rateLimit, getClientKey } from "@/lib/rate-limit";
 import { TIME_SLOTS, getBookableDates, isBusinessDay } from "@/lib/booking";
 
 export const runtime = "nodejs";
 
-type Row = { id: number; booking_date: string; time_slot: string };
+type PostgrestError = { code?: string; message?: string };
 
 export async function POST(req: Request) {
   const limit = rateLimit(getClientKey(req));
@@ -47,35 +47,38 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { lastInsertRowid } = await dbExecute(
-      `INSERT INTO bookings (name, email, phone, booking_date, time_slot, practice_area, notes)
-       VALUES ($name, $email, $phone, $date, $timeSlot, $practiceArea, $notes)`,
-      {
+    const { data: inserted, error } = await getSupabase()
+      .from("bookings")
+      .insert({
         name: data.name,
         email: data.email,
         phone: data.phone,
-        date: data.date,
-        timeSlot: data.timeSlot,
-        practiceArea: data.practiceArea,
+        booking_date: data.date,
+        time_slot: data.timeSlot,
+        practice_area: data.practiceArea,
         notes: data.notes ?? null,
-      },
-    );
+      })
+      .select("id, booking_date, time_slot")
+      .single();
 
-    const rows = await dbQuery<Row>(
-      "SELECT id, booking_date, time_slot FROM bookings WHERE id = $id",
-      { id: typeof lastInsertRowid === "bigint" ? Number(lastInsertRowid) : lastInsertRowid },
-    );
-    const row = rows[0];
+    if (error) throw error;
 
+    const row = inserted as { id: number; booking_date: string; time_slot: string };
     return NextResponse.json({
       ok: true,
-      bookingId: row?.id ?? Number(lastInsertRowid),
-      date: row?.booking_date.slice(0, 10) ?? data.date,
-      timeSlot: row?.time_slot ?? data.timeSlot,
+      bookingId: row.id,
+      date: row.booking_date.slice(0, 10),
+      timeSlot: row.time_slot,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (message.includes("UNIQUE constraint failed")) {
+    if (err instanceof Error && err.message.includes("not configured")) {
+      return NextResponse.json(
+        { error: "The site is not yet configured to take bookings." },
+        { status: 503 },
+      );
+    }
+    const pgError = err as PostgrestError;
+    if (pgError?.code === UNIQUE_VIOLATION) {
       return NextResponse.json(
         { error: "That time slot was just taken. Please choose another." },
         { status: 409 },

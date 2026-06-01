@@ -24,7 +24,7 @@ export default function PracticeAreaCard({ area }: { area: PracticeArea }) {
   return (
     <Link
       href={`/practice-areas/${area.slug}`}
-      className="group relative block rounded-lg border border-navy-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gold-400 hover:shadow-lg"
+      className="group relative block rounded-lg border border-navy-100 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-gold-400 hover:shadow-lg"
     >
       <div className="flex h-11 w-11 items-center justify-center rounded-md bg-navy-50 text-navy-700 transition-colors group-hover:bg-gold-500 group-hover:text-white">
         {Icon && <Icon className="h-6 w-6" aria-hidden="true" />}

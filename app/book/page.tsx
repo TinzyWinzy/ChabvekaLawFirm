@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const BOOKING_IMAGE =
-  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=80";
+  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=70";
 
 export default function BookPage() {
   return (
@@ -23,7 +23,8 @@ export default function BookPage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-25"
+            quality={65}
+            className="object-cover opacity-20"
           />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-20">

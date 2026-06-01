@@ -8,7 +8,7 @@ import StructuredData from "@/components/StructuredData";
 import Reveal from "@/components/Reveal";
 
 const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1920&q=80";
+  "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=70";
 
 const stats = [
   { value: "12+", label: "Years of Practice" },
@@ -50,10 +50,11 @@ export default function HomePage() {
             fill
             priority
             sizes="100vw"
+            quality={70}
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/85 to-navy-900/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-navy-900/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/60 to-navy-900/20" />
         </div>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-28 sm:py-36">
           <div className="max-w-2xl text-white">
@@ -175,16 +176,7 @@ export default function HomePage() {
       <Testimonials />
 
       <Reveal>
-        <section className="relative isolate overflow-hidden bg-navy-700">
-          <div className="absolute inset-0 -z-10 opacity-30">
-            <Image
-              src={HERO_IMAGE}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
+        <section className="bg-navy-700">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
             <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-white">
               Ready to talk?
@@ -195,7 +187,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-wrap gap-3 justify-center">
               <Link
                 href="/book"
-                className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg hover:bg-gold-600"
+                className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-7 py-3.5 text-sm font-semibold text-white shadow-md hover:bg-gold-600"
               >
                 Book a Consultation &rarr;
               </Link>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -21,10 +21,20 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#10233a",
+};
+
+const JS_LOADED_SCRIPT = `document.documentElement.classList.add('js-loaded');`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-white text-navy-700 font-sans antialiased">
+        <script dangerouslySetInnerHTML={{ __html: JS_LOADED_SCRIPT }} />
         <Header />
         <main>{children}</main>
         <Footer />

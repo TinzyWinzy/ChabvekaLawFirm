@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const OFFICE_IMAGE =
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80";
+  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=70";
 
 export default function ContactPage() {
   return (
@@ -44,6 +44,7 @@ export default function ContactPage() {
                   alt="Modern professional office space"
                   fill
                   sizes="(max-width: 1024px) 100vw, 33vw"
+                  quality={70}
                   className="object-cover"
                 />
               </div>
